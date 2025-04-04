@@ -227,38 +227,105 @@ function CountryDetails({ iso, data }: { iso: string; data: PovertyData[] }) {
 
   if (records.length === 0) {
     return (
-      <>
-        <Heading size="md" color="red.600" mb={2}>
-          {iso}
-        </Heading>
-        <Text fontSize="sm" color="gray.500">
-          No data found for this country.
-        </Text>
-      </>
+        <>
+          <Heading size="md" color="red.600" mb={2}>
+            {iso}
+          </Heading>
+          <Text fontSize="sm" color="gray.500">
+            No data found for this country.
+          </Text>
+        </>
     );
   }
 
   const countryName = records[0].Country || iso;
+  // Sort records by year
   const sorted = [...records].sort((a, b) => parseInt(a.Year) - parseInt(b.Year));
+
+  // Prepare data for the line chart
+  const years = sorted.map(r => r.Year);
+  const povertyRates = sorted.map(r => parseFloat(r.Poverty_Rate) || 0);
+
+  // For better x-axis display, determine if we need to show every label or skip some
+  const showEveryNthLabel = years.length > 10 ? Math.ceil(years.length / 10) : 1;
+  const visibleYears = years.filter((_, index) => index % showEveryNthLabel === 0);
 
   const showScroll = sorted.length > 10;
 
   return (
-    <>
-      <Heading size="md" color="red.600" mb={4}>
-        {countryName}
-      </Heading>
-      <Box
-        maxH={showScroll ? "250px" : "auto"}
-        overflowY={showScroll ? "auto" : "visible"}
-        pr={showScroll ? 2 : 0} // small padding on right to avoid scrollbar overlap
-      >
-        {sorted.map((r) => (
-          <Text key={r.Year} fontSize="sm" color="gray.700" mb={1} fontWeight="semibold">
-            Year {r.Year}: {r.Poverty_Rate}%
-          </Text>
-        ))}
-      </Box>
-    </>
+      <>
+        <Heading size="md" color="red.600" mb={4}>
+          {countryName}
+        </Heading>
+
+        <Flex direction={{ base: "column", md: "row" }} width="100%" gap={4}>
+          {/* Line Chart Container */}
+          <Box width={{ base: "100%", md: "65%" }} display="flex" flexDirection="column">
+            {/* Chart Box with fixed height */}
+            <Box height="300px" width="100%">
+              <Plot
+                  data={[
+                    {
+                      x: years,
+                      y: povertyRates,
+                      type: 'scatter',
+                      mode: 'lines+markers',
+                      marker: { color: 'rgb(255, 111, 97)' },
+                      line: { color: 'rgb(255, 111, 97)', width: 3 },
+                      name: 'Poverty Rate (%)',
+                      hovertemplate: 'Year %{x}<br>Poverty Rate: %{y}%<extra></extra>'
+                    }
+                  ]}
+                  layout={{
+                    autosize: true,
+                    title: 'Poverty Rate Over Time',
+                    xaxis: {
+                      title: 'Year',
+                      tickmode: 'array',
+                      tickvals: visibleYears,
+                      ticktext: visibleYears,
+                      tickangle: 0
+                    },
+                    yaxis: {
+                      title: 'Poverty Rate (%)',
+                      range: [0, Math.max(...povertyRates) * 1.1],
+                      zeroline: true
+                    },
+                    margin: { l: 50, r: 20, t: 40, b: 60 },
+                    hovermode: 'closest',
+                    showlegend: false
+                  }}
+                  style={{ width: '100%', height: '100%' }}
+                  config={{ responsive: true }}
+              />
+            </Box>
+
+            {/* Note placed outside the chart box with proper spacing */}
+            <Box mt={3} mb={3}>
+              <Text fontSize="xs" color="gray.500" textAlign="center">
+                Note: The chart connects available data points. Years without data are not displayed.
+              </Text>
+            </Box>
+          </Box>
+
+          {/* Text representation */}
+          <Box
+              width={{ base: "100%", md: "35%" }}
+              maxH={showScroll ? "300px" : "auto"}
+              overflowY={showScroll ? "auto" : "visible"}
+              pr={showScroll ? 2 : 0}
+              pl={4}
+              borderLeft={{ base: "none", md: "1px solid" }}
+              borderColor={{ base: "transparent", md: "gray.200" }}
+          >
+            <Heading size="sm" mb={3} color="gray.700">Historical Data</Heading>
+            {sorted.map((r) => (
+                <Text key={r.Year} fontSize="sm" color="gray.700" mb={1} fontWeight="semibold">
+                  Year {r.Year}: {r.Poverty_Rate}%
+                </Text>
+            ))}
+          </Box>
+        </Flex>
+      </>
   );
 }

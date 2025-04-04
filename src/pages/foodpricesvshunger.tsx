@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { Box, Heading, Text, Center, Spinner, Flex, HStack, Select,
     FormControl, FormLabel, Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
 import Papa from "papaparse";
+import React, { ReactNode } from "react";
 
 // Dynamically import Plotly (disabling SSR)
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
