@@ -54,7 +54,7 @@ export default function PovertyInsights() {
   return (
     <Flex direction="column" align="center" p={0} bg="gray.50" minH="100vh" justify="center">
       {/* Map Section */}
-      <Box bg="white" p={6} borderRadius="0" boxShadow="1g" width="100%" mb={6}>
+      <Box bg="white" p={6} borderRadius="lg" boxShadow="1g" width="100%" mb={6}>
         <Heading mb={0} color="red.600" textAlign="center" fontSize="5xl" ml="-160px">
           Poverty Rates Over Time
         </Heading>
@@ -66,9 +66,11 @@ export default function PovertyInsights() {
             z: data.map((d) => parseFloat(d.Poverty_Rate) || 0),
             text: data.map((d) => d.Country),
             colorscale: [
-              [0, "#FAD02E"], // Light yellow
-              [0.5, "#F29C11"], // Orange
-              [1, "#D83367"], // Red
+              [0, "#F44336"],  // Poverty is Rising (Red)
+              [0.25, "#FFEB3B"],  // Off Track for SDG Target (Yellow)
+              [0.5, "#4CAF50"],  // On Track for SDG Target (Green)
+              [0.75, "#009688"],  // Poverty Below 3% (Teal)
+              [1, "#9E9E9E"],  // No Data (Gray)
             ],
             hovertemplate: "<b>%{text}</b><br>Poverty: %{z}%<extra></extra>",
           }]}
@@ -158,9 +160,11 @@ export default function PovertyInsights() {
               z: data.filter((d) => d.Year === year).map((d) => parseFloat(d.Poverty_Rate) || 0),
               text: data.filter((d) => d.Year === year).map((d) => d.Country),
               colorscale: [
-                [0, "#FF7F7F"],
-                [0.5, "#FFD700"],
-                [1, "#4CAF50"],
+                [0, "#F44336"],  // Poverty is Rising (Red)
+                [0.25, "#FFEB3B"],  // Off Track for SDG Target (Yellow)
+                [0.5, "#4CAF50"],  // On Track for SDG Target (Green)
+                [0.75, "#009688"],  // Poverty Below 3% (Teal)
+                [1, "#9E9E9E"],  // No Data (Gray)
               ],
               hovertemplate: "<b>%{text}</b><br>Poverty: %{z}%<extra></extra>",
             }],
