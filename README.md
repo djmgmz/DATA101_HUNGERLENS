@@ -29,6 +29,7 @@ npm install react@^19.0.0
 
 npm install react-dom@^19.0.0
 
+npm install react-icons
 To run the development server, run:
 
 npm run dev
