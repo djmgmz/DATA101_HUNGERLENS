@@ -139,7 +139,7 @@ export default function PovertyInsights() {
             }],
             sliders: [{
               active: 0,
-              pad: { t: 50 },
+              pad: { t: 50, b: 10 },
               x: 0.1,
               y: 0,
               steps: uniqueYears.map((year, i) => ({
@@ -284,19 +284,28 @@ function CountryDetails({ iso, data }: { iso: string; data: PovertyData[] }) {
                       tickmode: 'array',
                       tickvals: visibleYears,
                       ticktext: visibleYears,
-                      tickangle: 0
+                      tickangle: 0,
+                      autorange: true
                     },
                     yaxis: {
                       title: 'Poverty Rate (%)',
-                      range: [0, Math.max(...povertyRates) * 1.1],
+                      autorange: true, // Auto-scale based on data
                       zeroline: true
                     },
                     margin: { l: 50, r: 20, t: 40, b: 60 },
                     hovermode: 'closest',
-                    showlegend: false
+                    showlegend: false,
+                    dragmode: 'pan' // Default interaction mode to pan
                   }}
                   style={{ width: '100%', height: '100%' }}
-                  config={{ responsive: true }}
+                  config={{
+                    responsive: true,
+                    scrollZoom: true,       // Enable scroll to zoom
+                    displayModeBar: true,   // Show the mode bar
+                    modeBarButtonsToAdd: ['pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'], // Add useful buttons
+                    modeBarButtonsToRemove: ['select2d', 'lasso2d'], // Remove selection tools
+                    displaylogo: false      // Hide the plotly logo
+                  }}
               />
             </Box>
 
