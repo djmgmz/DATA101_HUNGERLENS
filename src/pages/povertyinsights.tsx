@@ -66,11 +66,11 @@ export default function PovertyInsights() {
             z: data.map((d) => parseFloat(d.Poverty_Rate) || 0),
             text: data.map((d) => d.Country),
             colorscale: [
-              [0, "#F44336"],  // Poverty is Rising (Red)
-              [0.25, "#FFEB3B"],  // Off Track for SDG Target (Yellow)
-              [0.5, "#4CAF50"],  // On Track for SDG Target (Green)
-              [0.75, "#009688"],  // Poverty Below 3% (Teal)
-              [1, "#9E9E9E"],  // No Data (Gray)
+            [0, "#4CAF50"], // On Track for SDG Target (Green) - Lowest Poverty
+            [0.25, "#009688"], // Poverty Below 3% (Teal)
+            [0.5, "#FFEB3B"], // Off Track for SDG Target (Yellow)
+            [0.75, "#F44336"], // Poverty is Rising (Red)
+            [1, "#9E9E9E"] // No Data (Gray) - Highest Poverty
             ],
             hovertemplate: "<b>%{text}</b><br>Poverty: %{z}%<extra></extra>",
           }]}
