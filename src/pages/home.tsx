@@ -448,6 +448,109 @@ export default function Home() {
     );
   }
 
+  // Add tooltip function for progress bars
+  const TooltipLabel = ({ label, value, max }) => (
+      <Tooltip
+          label={`${value}% of ${max}% scale`}
+          hasArrow
+          placement="top"
+      >
+        <Box position="absolute" right={0} top={-6} fontSize="xs" color="gray.500">
+          {label}
+        </Box>
+      </Tooltip>
+  );
+  const StatCard = ({
+                      label,
+                      value,
+                      suffix = "%",
+                      changeType,
+                      changeValue,
+                      changeLabel,
+                      fullChangeText,
+                      isPositiveChange,
+                      helpText,
+                      secondaryText,
+                      progressValue,
+                      progressMax = 100,
+                      progressColor
+                    }) => {
+    // Calculate the actual percentage for the progress bar
+    // This ensures the visual matches the actual value relative to the scale
+    const actualProgressPercentage = (value / progressMax) * 100;
+
+    return (
+        <Stat p={4} bg="white" shadow="md" borderRadius="md" position="relative">
+          <StatLabel color="gray.600">{label}</StatLabel>
+          <StatNumber fontSize="2xl">{value}{suffix}</StatNumber>
+
+          {/* Handle both types of change text displays */}
+          {fullChangeText ? (
+              <StatHelpText>
+                <Flex align="center" mt={1}>
+                  <StatArrow
+                      type={changeType}
+                      color={isPositiveChange ? "green.500" : "red.500"}
+                  />
+                  <Text
+                      as="span"
+                      color={isPositiveChange ? "green.500" : "red.500"}
+                      fontWeight="medium"
+                  >
+                    {fullChangeText}
+                  </Text>
+                </Flex>
+              </StatHelpText>
+          ) : changeValue && (
+              <StatHelpText>
+                <Flex align="center" mt={1}>
+                  <StatArrow
+                      type={changeType}
+                      color={isPositiveChange ? "green.500" : "red.500"}
+                  />
+                  <Text
+                      as="span"
+                      color={isPositiveChange ? "green.500" : "red.500"}
+                      fontWeight="medium"
+                  >
+                    {Math.abs(parseFloat(changeValue))}% {changeLabel}
+                  </Text>
+                </Flex>
+              </StatHelpText>
+          )}
+
+          {helpText && <StatHelpText>{helpText}</StatHelpText>}
+          {secondaryText && (
+              <Text fontSize="xs" color="gray.500" mt={1}>
+                {secondaryText}
+              </Text>
+          )}
+
+          <Box position="relative" mt={3}>
+            <Progress
+                value={actualProgressPercentage}
+                colorScheme={progressColor}
+                size="sm"
+            />
+
+            <Flex
+                justify="space-between"
+                mt={1}
+                width="100%"
+                fontSize="xs"
+                color="gray.500"
+            >
+              <Text>0%</Text>
+              <Text>{progressMax/4}%</Text>
+              <Text>{progressMax/2}%</Text>
+              <Text>{progressMax*3/4}%</Text>
+              <Text>{progressMax}%</Text>
+            </Flex>
+          </Box>
+        </Stat>
+    );
+  };
+
   return (
       <Box p={4} bg="gray.100" minHeight="100vh">
         <Heading textAlign="center" color="goldenrod" mb={6}>
@@ -456,89 +559,44 @@ export default function Home() {
 
         {/* Key Stats Row */}
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} mb={6}>
-          {/*<Stat p={4} bg="white" shadow="md" borderRadius="md" position="relative" overflow="hidden">*/}
-          {/*  <Box position="absolute" top={0} right={0} bg="red.400" p={2} borderBottomLeftRadius="md">*/}
-          {/*    <Text fontSize="xs" color="white">Global</Text>*/}
-          {/*  </Box>*/}
-          {/*  <StatLabel>People in Food Crisis</StatLabel>*/}
-          {/*  <StatNumber fontSize="2xl">{globalStats.totalAffected}M</StatNumber>*/}
-          {/*  <StatHelpText>*/}
-          {/*    <StatArrow type={globalStats.changePercent > 0 ? "increase" : "decrease"} />*/}
-          {/*    {Math.abs(globalStats.changePercent)}% since 2016*/}
-          {/*  </StatHelpText>*/}
-          {/*  <Progress value={70} colorScheme="red" size="sm" mt={2} />*/}
-          {/*</Stat>*/}
+          {/* Global Undernourishment */}
+          <StatCard
+              label="Global Undernourishment"
+              value={globalStats.undernourishmentRate}
+              changeType="decrease"
+              changeValue={globalStats.changePercent}
+              changeLabel="decrease since 2016"
+              isPositiveChange={true}
+              progressValue={globalStats.undernourishmentRate}  // Don't multiply here
+              progressMax={50} // Scale 0-50%
+              progressColor="red"
+              secondaryText="Target: Less than 5% by 2030"
+          />
 
-          {/* Replace the existing People in Food Crisis stat with this */}
-          <Stat p={4} bg="white" shadow="md" borderRadius="md" position="relative" overflow="hidden">
-            <Box position="absolute" top={0} right={0} bg="red.400" p={2} borderBottomLeftRadius="md">
-              <Text fontSize="xs" color="white">Global</Text>
-            </Box>
-            <StatLabel>Global Undernourishment</StatLabel>
-            <StatNumber fontSize="2xl">{globalStats.undernourishmentRate}%</StatNumber>
-            <StatHelpText>
-              <StatArrow type={globalStats.changePercent > 0 ? "increase" : "decrease"} />
-              {Math.abs(globalStats.changePercent)}% since 2016
-            </StatHelpText>
-            <Progress
-                value={Math.min(globalStats.undernourishmentRate * 2, 100)}
-                colorScheme="red"
-                size="sm"
-                mt={2}
-            />
-          </Stat>
+          {/* Annual Food Price Growth */}
+          <StatCard
+              label="Annual Food Price Growth"
+              value={calculateAnnualizedIncrease(foodPriceData)}
+              changeType={calculateAnnualizedIncrease(foodPriceData) > lastYearRate ? "increase" : "decrease"}
+              fullChangeText={calculateAnnualizedIncrease(foodPriceData) > lastYearRate
+                  ? `Up from ${lastYearRate}% last year`
+                  : `Down from ${lastYearRate}% last year`}
+              isPositiveChange={calculateAnnualizedIncrease(foodPriceData) <= lastYearRate}
+              helpText="Annual average (1990-2025)"
+              progressValue={calculateAnnualizedIncrease(foodPriceData)}  // Don't multiply here
+              progressMax={100} // Scale 0-100%
+              progressColor="orange"
+          />
 
-          <Stat p={4} bg="white" shadow="md" borderRadius="md" flex="1">
-            <Box position="absolute" top={0} right={0} bg="orange.400" p={2} borderBottomLeftRadius="md">
-              <Text fontSize="xs" color="white">Global</Text>
-            </Box>
-            <StatLabel>Annual Food Price Growth</StatLabel>
-            <StatNumber>{calculateAnnualizedIncrease(foodPriceData)}%</StatNumber>
-
-                <StatHelpText>
-                  <StatArrow
-                      type={calculateAnnualizedIncrease(foodPriceData) > lastYearRate ? "increase" : "decrease"}
-                  />
-                  {calculateAnnualizedIncrease(foodPriceData) > lastYearRate
-                      ? `Up from ${lastYearRate}% last year`
-                      : `Down from ${lastYearRate}% last year`}
-                </StatHelpText>
-
-            <StatHelpText>Annual average (1990-2025)</StatHelpText>
-            <Progress
-                value={Math.min(calculateAnnualizedIncrease(foodPriceData) * 5, 100)}
-                colorScheme="orange"
-                size="sm"
-                mt={2}
-            />
-          </Stat>
-
-          <Stat p={4} bg="white" shadow="md" borderRadius="md" flex="1">
-            <Box position="absolute" top={0} right={0} bg="orange.400" p={2} borderBottomLeftRadius="md">
-              <Text fontSize="xs" color="white">Global</Text>
-            </Box>
-            <StatLabel>Total Price Increase</StatLabel>
-            <StatNumber>{calculatePriceIncrease(foodPriceData)}%</StatNumber>
-            <StatHelpText>
-              Global increase since 2015
-              <Box as="span" ml={2} fontWeight="bold" color="gray.500">
-                (${(100 * (1 + calculatePriceIncrease(foodPriceData)/100)).toFixed(0)} per $100)
-              </Box>
-            </StatHelpText>
-            <Progress value={Math.min(calculatePriceIncrease(foodPriceData), 100)} colorScheme="orange" size="sm" mt={2} />
-          </Stat>
-
-
-          {/*/!*commented sdg zero hunger progress since it seems wrong*!/*/}
-          {/*<Stat p={4} bg="white" shadow="md" borderRadius="md" flex="1">*/}
-          {/*  <Box position="absolute" top={0} right={0} bg="green.400" p={2} borderBottomLeftRadius="md">*/}
-          {/*    <Text fontSize="xs" color="white">Global</Text>*/}
-          {/*  </Box>*/}
-          {/*  <StatLabel>SDG Zero Hunger Progress</StatLabel>*/}
-          {/*  <StatNumber>{globalStats.progressPercent}%</StatNumber>*/}
-          {/*  <StatHelpText>Target by {globalStats.targetYear}</StatHelpText>*/}
-          {/*  <Progress value={globalStats.progressPercent} colorScheme="green" size="sm" mt={2} />*/}
-          {/*</Stat>*/}
+          {/* Total Price Increase */}
+          <StatCard
+              label="Total Price Increase"
+              value={calculatePriceIncrease(foodPriceData)}
+              secondaryText={`Global increase since 2015 ($${(100 * (1 + calculatePriceIncrease(foodPriceData)/100)).toFixed(0)} per $100)`}
+              progressValue={calculatePriceIncrease(foodPriceData)}
+              progressMax={200}  // Scale 0-200%
+              progressColor="orange"
+          />
         </SimpleGrid>
 
         {/* Map Section */}
@@ -599,61 +657,7 @@ export default function Home() {
             </NextLink>
           </Box>
 
-          <Flex gap={4}>
-            <Box bg="white" width="900px" shadow="md" borderRadius="md" p={4} flex="1">
-              <VStack align="stretch" spacing={4}>
-                <Heading as="h3" size="md">
-                  Hunger Reduction Progress
-                </Heading>
-                <HStack justifyContent="space-between">
-                  <Box
-                      height="150px"
-                      width="100%"
-                      bg="gray.200"
-                      borderRadius="md"
-                      mb={4}
-                      textAlign="center"
-                      pt="60px"
-                  >
-                    [Line Chart Placeholder]
-                  </Box>
-
-                  <CircularProgress value={67} color="green.400" size="100px">
-                    <CircularProgressLabel>67%</CircularProgressLabel>
-                  </CircularProgress>
-                </HStack>
-
-                <Divider />
-
-                <Heading as="h3" size="md">
-                  Recent Reports
-                </Heading>
-                <VStack
-                    align="stretch"
-                    spacing={3}
-                    maxHeight="150px"
-                    overflowY="auto"
-                    pr={2}
-                >
-                  <Box bg="gray.100" p={2} borderRadius="md">
-                    [Placeholder]
-                  </Box>
-                  <Box bg="gray.100" p={2} borderRadius="md">
-                    [Placeholder]
-                  </Box>
-                  <Box bg="gray.100" p={2} borderRadius="md">
-                    [Placeholder]
-                  </Box>
-                  <Box bg="gray.100" p={2} borderRadius="md">
-                    [Placeholder]
-                  </Box>
-                  <Box bg="gray.100" p={2} borderRadius="md">
-                    [Placeholder]
-                  </Box>
-                </VStack>
-              </VStack>
-            </Box>
-          </Flex>
+          
         </SimpleGrid>
       </Box>
   );
