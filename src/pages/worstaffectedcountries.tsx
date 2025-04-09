@@ -73,24 +73,26 @@ export default function WorstAffectedCountries() {
     return severityColorScale.find(s => value >= s.min && value <= s.max)?.color ?? "#ccc";
   };  
 
-  const ghiData = {
-    labels: data.map((d) => d["Country with data from"]),
-    datasets: [
-      {
-        label: "",
-        data: data.map((d) => {
-          const value = d[columnMapping[yearRange]];
-          return value && value !== "<5" && value !== "—" ? parseFloat(value) : null;
-        }),
-        backgroundColor: data.map((d) => {
-          const raw = d[columnMapping[yearRange]];
-          const value = raw && raw !== "<5" && raw !== "—" ? parseFloat(raw) : null;
-          return getSeverityColor(value);
-        }),
-      },
-    ],
-  };
-  
+  const ghiDataPoints = data
+  .map((d) => {
+    const value = d[columnMapping[yearRange]];
+    const numericValue = value && value !== "<5" && value !== "—" ? parseFloat(value) : null;
+    return { country: d["Country with data from"], value: numericValue };
+  })
+  .filter((d) => d.value !== null)
+  .sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
+  .slice(0, 5);
+
+const ghiData = {
+  labels: ghiDataPoints.map((d) => d.country),
+  datasets: [
+    {
+      label: "",
+      data: ghiDataPoints.map((d) => d.value),
+      backgroundColor: ghiDataPoints.map((d) => getSeverityColor(d.value)),
+    },
+  ],
+};
 
   const indicatorOptions = [
     {
@@ -203,18 +205,41 @@ export default function WorstAffectedCountries() {
     return indicatorColorScale.find(s => value >= s.min && value <= s.max)?.color ?? "#ccc";
   };
 
-  const indicatorChartData = {
-    labels: validIndicatorData.map((d) => d.Country),
-    datasets: [
-      {
-        label: "",
-        data: selectedIndicatorData,
-        backgroundColor: selectedIndicatorData.map(value =>
-          indicatorColorScale.find(s => value >= s.min && value < s.max)?.color ?? "#ccc"
-        ),
-      },
-    ],
-  };
+  const indicatorDataPoints = validIndicatorData
+  .map((row) => {
+    const value = parseFloat(row[selectedColumn]);
+    return { country: row.Country, value };
+  })
+  .sort((a, b) => b.value - a.value)
+  .slice(0, 5);
+
+const indicatorChartData = {
+  labels: indicatorDataPoints.map((d) => d.country),
+  datasets: [
+    {
+      label: "",
+      data: indicatorDataPoints.map((d) => d.value),
+      backgroundColor: indicatorDataPoints.map((d) => getIndicatorColor(d.value)),
+    },
+  ],
+};
+
+const horizontalBarOptions = {
+  indexAxis: "y" as const,
+  plugins: {
+    legend: { display: false },
+  },
+  scales: {
+    x: {
+      beginAtZero: true,
+      title: { display: true, text: "Value" },
+    },
+    y: {
+      title: { display: true, text: "Country" },
+    },
+  },
+};
+
 
   return (
     <Box p={4} bg="gray.100" minHeight="100vh">
@@ -261,7 +286,7 @@ export default function WorstAffectedCountries() {
               </Flex>
             ))}
           </Flex>
-          <Bar data={ghiData} options={{ plugins: { legend: { display: false } } }} />
+          <Bar data={ghiData} options={horizontalBarOptions} />s
         </Box>
       )}
 
@@ -304,7 +329,7 @@ export default function WorstAffectedCountries() {
                 </Flex>
               ))}
             </Flex>
-            <Bar data={indicatorChartData} options={{ plugins: { legend: { display: false } } }} />
+            <Bar data={indicatorChartData} options={horizontalBarOptions} />
           </Box>
         </>
       )}
