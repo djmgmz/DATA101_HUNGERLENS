@@ -11,19 +11,29 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { Bar } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import Papa from "papaparse";
 import { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
+  LineElement,
   BarElement,
+  PointElement,
   CategoryScale,
   LinearScale,
   Tooltip,
   Legend,
 } from "chart.js";
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+ChartJS.register(
+  LineElement,
+  PointElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend
+);
 
 export default function WorstAffectedCountries() {
   const [view, setView] = useState("Global Hunger Index");
@@ -31,6 +41,7 @@ export default function WorstAffectedCountries() {
   const [yearRange, setYearRange] = useState<YearKey>("'19-23");
   const [data, setData] = useState<any[]>([]);
   const [indicatorData, setIndicatorData] = useState<any[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
   const yearOptions: { label: string; key: YearKey }[] = [
     { label: "2024 '19-23", key: "'19-23" },
@@ -224,10 +235,39 @@ const indicatorChartData = {
   ],
 };
 
+const lineChartData = {
+  labels: indicator.years.slice().reverse(),
+  datasets: [
+    {
+      label: `${selectedCountry} (${indicator.label})`,
+      data: indicator.years
+        .slice()
+        .reverse()
+        .map((year) => {
+          const col = indicatorColumnMap[indicator.label][year];
+          const countryRow = indicatorData.find((row) => row.Country === selectedCountry);
+          const val = countryRow?.[col];
+          return val && !val.includes("<") && !isNaN(parseFloat(val)) ? parseFloat(val) : null;
+        }),
+      borderColor: "teal",
+      backgroundColor: "rgba(0, 128, 128, 0.3)",
+    },
+  ],
+};
+
+
 const horizontalBarOptions = {
   indexAxis: "y" as const,
   plugins: {
     legend: { display: false },
+  },
+  onClick: (_: any, elements: any) => {
+    if (elements.length > 0) {
+      const index = elements[0].index;
+      const clickedCountry = indicatorDataPoints[index]?.country;
+      console.log("Clicked on country:", clickedCountry);
+      setSelectedCountry(clickedCountry);
+    }
   },
   scales: {
     x: {
@@ -241,98 +281,116 @@ const horizontalBarOptions = {
 };
 
 
-  return (
-    <Box p={4} bg="gray.100" minHeight="100vh">
-      <Heading textAlign="center" color="goldenrod" mb={6}>
-        WORST-AFFECTED COUNTRIES
-      </Heading>
+return (
+  <Box p={4} bg="gray.100" minHeight="100vh">
+    <Heading textAlign="center" color="goldenrod" mb={6}>
+      WORST-AFFECTED COUNTRIES
+    </Heading>
 
-      <Flex justify="center" gap={4} mb={6}>
+    <Flex justify="center" gap={4} mb={6}>
+      <Menu>
+        <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+          {view}
+        </MenuButton>
+        <MenuList>
+          <MenuItem onClick={() => setView("Global Hunger Index")}>
+            Global Hunger Index
+          </MenuItem>
+          <MenuItem onClick={() => setView("Indicators")}>Indicators</MenuItem>
+        </MenuList>
+      </Menu>
+
+      {view === "Global Hunger Index" && (
         <Menu>
           <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-            {view}
+            {yearRange}
           </MenuButton>
           <MenuList>
-            <MenuItem onClick={() => setView("Global Hunger Index")}>
-              Global Hunger Index
-            </MenuItem>
-            <MenuItem onClick={() => setView("Indicators")}>Indicators</MenuItem>
+            {yearOptions.map((yr) => (
+              <MenuItem key={yr.key} onClick={() => setYearRange(yr.key)}>
+                {yr.label}
+              </MenuItem>
+            ))}
           </MenuList>
         </Menu>
+      )}
+    </Flex>
 
-        {view === "Global Hunger Index" && (
+    {view === "Global Hunger Index" && (
+      <Box px={[2, 10]}>
+        <Flex justify="center" wrap="wrap" gap={4} mb={4}>
+          {severityColorScale.map((severity) => (
+            <Flex align="center" key={severity.label}>
+              <Box w="16px" h="16px" bg={severity.color} borderRadius="sm" mr={2} />
+              <Text fontSize="sm">{severity.label}</Text>
+            </Flex>
+          ))}
+        </Flex>
+        <Bar data={ghiData} options={horizontalBarOptions} />
+        
+        {selectedCountry && (
+          <Box mt={10} px={[2, 10]}>
+            <Heading size="md" mb={4} color="teal.700">
+              {selectedCountry} Trend Over Time
+            </Heading>
+            <Line data={lineChartData} />
+          </Box>
+        )}
+      </Box>
+    )}
+
+    {view === "Indicators" && (
+      <>
+        <Flex justify="center" gap={4} mb={4}>
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-              {yearRange}
+              {indicator.label}
             </MenuButton>
             <MenuList>
-              {yearOptions.map((yr) => (
-                <MenuItem key={yr.key} onClick={() => setYearRange(yr.key)}>
-                  {yr.label}
+              {indicatorOptions.map((opt) => (
+                <MenuItem key={opt.label} onClick={() => setIndicator(opt)}>
+                  {opt.label}
                 </MenuItem>
               ))}
             </MenuList>
           </Menu>
-        )}
-      </Flex>
 
-      {view === "Global Hunger Index" && (
-        <Box px={[2, 10]}>
+          <Menu>
+            <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+              {indicatorYear}
+            </MenuButton>
+            <MenuList>
+              {indicatorYearOptions.map((opt) => (
+                <MenuItem key={opt.key} onClick={() => setIndicatorYear(opt.key)}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </MenuList>
+          </Menu>
+        </Flex>
+
+        <Box px={[2, 10]} mt={4}>
           <Flex justify="center" wrap="wrap" gap={4} mb={4}>
-            {severityColorScale.map((severity) => (
-              <Flex align="center" key={severity.label}>
-                <Box w="16px" h="16px" bg={severity.color} borderRadius="sm" mr={2} />
-                <Text fontSize="sm">{severity.label}</Text>
+            {indicatorColorScale.map((scale, i) => (
+              <Flex align="center" key={i}>
+                <Box w="16px" h="16px" bg={scale.color} borderRadius="sm" mr={2} />
+                <Text fontSize="sm">{scale.label}</Text>
               </Flex>
             ))}
           </Flex>
-          <Bar data={ghiData} options={horizontalBarOptions} />s
+          <Bar data={indicatorChartData} options={horizontalBarOptions} />
+
+          {selectedCountry && (
+            <Box mt={10} px={[2, 10]}>
+              <Heading size="md" mb={4} color="teal.700">
+                {selectedCountry} Trend Over Time
+              </Heading>
+              <Line data={lineChartData} />
+            </Box>
+          )}
         </Box>
-      )}
-
-      {view === "Indicators" && (
-        <>
-          <Flex justify="center" gap={4} mb={4}>
-            <Menu>
-              <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-                {indicator.label}
-              </MenuButton>
-              <MenuList>
-                {indicatorOptions.map((opt) => (
-                  <MenuItem key={opt.label} onClick={() => setIndicator(opt)}>
-                    {opt.label}
-                  </MenuItem>
-                ))}
-              </MenuList>
-            </Menu>
-
-            <Menu>
-              <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-                {indicatorYear}
-              </MenuButton>
-              <MenuList>
-                {indicatorYearOptions.map((opt) => (
-                  <MenuItem key={opt.key} onClick={() => setIndicatorYear(opt.key)}>
-                    {opt.label}
-                  </MenuItem>
-                ))}
-              </MenuList>
-            </Menu>
-          </Flex>
-
-          <Box px={[2, 10]} mt={4}>
-            <Flex justify="center" wrap="wrap" gap={4} mb={4}>
-              {indicatorColorScale.map((scale, i) => (
-                <Flex align="center" key={i}>
-                  <Box w="16px" h="16px" bg={scale.color} borderRadius="sm" mr={2} />
-                  <Text fontSize="sm">{scale.label}</Text>
-                </Flex>
-              ))}
-            </Flex>
-            <Bar data={indicatorChartData} options={horizontalBarOptions} />
-          </Box>
-        </>
-      )}
-    </Box>
-  );
+      </>
+    )}
+  </Box>
+);
 }
