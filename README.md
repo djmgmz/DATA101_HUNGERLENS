@@ -74,17 +74,18 @@ http://localhost:3000
 
 ## 🌍 Data Sources
 
-- 📈 **Poverty Data** – [World Bank API](https://data.worldbank.org/)
-- 🍽️ **Hunger Data** – Global Hunger Index (2024)
-- 🛒 **Food Prices** – [Humanitarian Data Exchange (humdata.org)](https://data.humdata.org/)
+- 📈 **Poverty Data** – [World Bank Indicator: SI.POV.DDAY](https://data.worldbank.org/indicator/SI.POV.DDAY)
+- 🍽️ **Hunger Data** – [Global Hunger Index (2024) - Kaggle](https://www.kaggle.com/datasets/faduregis/global-hunger-index-2024)
+- 🛒 **Food Prices** – [WFP Global Food Prices Dataset (HDX)](https://data.humdata.org/dataset/global-wfp-food-prices?fbclid=IwY2xjawIvrKdleHRuA2FlbQIxMAABHRe8zUV68t9n-DYtvpT0dG_y2vslCq9SzGWRZwQfEGXC9BRcyGhoWkTCPw_aem_e3T_qGZzglT-IL8kl6lgxQ)
 
 ---
 
 ## 🧠 Authors
 
-- Developed with love by the MA ANO ULAM💚
+- Developed with love by the MA ANO ULAM 💚
 
 ---
+
 
 ## 🔔 Reminder
 
