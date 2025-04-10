@@ -34,7 +34,7 @@ npm install react-icons
 
 ---
 
-## 📥 Preparing the Data 
+## 📥 Preparing the Data
 
 Before running the app, you need to generate the required CSV file for **food prices**. This must be done through the companion **Google Colab notebook**, which scrapes and compiles the data from public sources.
 
@@ -42,11 +42,11 @@ Before running the app, you need to generate the required CSV file for **food pr
 
 2. ➡️ [Open the Colab Notebook](https://colab.research.google.com/drive/1CB5YGZHRsyesIsGErbFml34BrXnQOTs4?usp=sharing), go to **"Scraping Global Food Prices Data from Country Links"**
 
-3. Paste the downloaded (WFP COUNTRIES GLOBAL) on the Files of Collab, then run the code.
+3. Paste the downloaded (WFP COUNTRIES GLOBAL) on the Files of Colab, then run the code.
 
 4. Web-scraping will commence. This process will output a file named `combined_country_food_prices.csv`, which you'll need to download and place in your project directory.
 
-> **Note:** If you're modifying the notebook, ensure that libraries such as `requests`, `pandas`, and `beautifulsoup4` are installed.
+> **Note:** If you're modifying the notebook, ensure that libraries such as `requests`, `pandas`, and `beautifulsoup4` are installed. But if all else fails, [CSV files needed for the project](https://drive.google.com/drive/folders/1cKfBleYiaoFlsz4ydHx5r0i8ENv0thbO?usp=sharing).
 
 ---
 
@@ -86,10 +86,9 @@ http://localhost:3000
 
 ## 🧠 Authors
 
-- Developed with love by the ma ano ulam 💚
+- Developed with love by the MA ANO ULAM 💚
 
 ---
-
 
 ## 🔔 Reminder
 
