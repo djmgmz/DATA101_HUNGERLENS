@@ -36,7 +36,7 @@ npm install react-icons
 
 ## 📥 Preparing the Data
 
-Before running the app, you need to generate the required CSV file for **food prices**. This must be done through the companion **Google Colab notebook**, which scrapes and compiles the data from public sources.
+Before running the app, you need to generate the required CSV file for **food prices**. This must be done through the companion **Google Colab notebook**, which scrapes and compiles the data from public sources. This is due to the fact that github cannot accept the file since it is large.
 
 1. Go to the [WFP Global Food Prices Dataset (HDX)](https://data.humdata.org/dataset/global-wfp-food-prices?fbclid=IwY2xjawIvrKdleHRuA2FlbQIxMAABHRe8zUV68t9n-DYtvpT0dG_y2vslCq9SzGWRZwQfEGXC9BRcyGhoWkTCPw_aem_e3T_qGZzglT-IL8kl6lgxQ), then download **WFP COUNTRIES GLOBAL** csv file. 
 
