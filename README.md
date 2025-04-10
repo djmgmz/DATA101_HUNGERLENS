@@ -38,7 +38,7 @@ npm install react-icons
 
 Before running the app, you need to generate the required CSV file for food prices. This must be done through the companion **Google Colab notebook**, which scrapes and compiles the data from public sources.
 
-➡️ [Open the Colab Notebook](https://colab.research.google.com/) *(insert your actual notebook URL here)*
+➡️ [Open the Colab Notebook](https://colab.research.google.com/drive/1CB5YGZHRsyesIsGErbFml34BrXnQOTs4?usp=sharing)
 
 This process will output a file named `combined_country_food_prices.csv`, which you'll need to download and place in your project directory.
 
@@ -82,7 +82,7 @@ http://localhost:3000
 
 ## 🧠 Authors
 
-- Developed with love by the MA ANO ULAM 💚
+- Developed with love by the ma ano ulam 💚
 
 ---
 
