@@ -66,12 +66,12 @@ export default function PovertyInsights() {
             z: data.map((d) => parseFloat(d.Poverty_Rate) || 0),
             text: data.map((d) => d.Country),
             colorscale: [
-            [0, "#4CAF50"], // On Track for SDG Target (Green) - Lowest Poverty
-            [0.25, "#009688"], // Poverty Below 3% (Teal)
-            [0.5, "#FFEB3B"], // Off Track for SDG Target (Yellow)
-            [0.75, "#F44336"], // Poverty is Rising (Red)
-            [1, "#9E9E9E"] // No Data (Gray) - Highest Poverty
+              [0.0, "#009688"],   // Teal — 0% (Poverty below 3%)
+              [0.3, "#4CAF50"],   // Green — improving
+              [0.6, "#FFEB3B"],   // Yellow — Off Track
+              [1.0, "#F44336"],   // Red — Poverty is Rising (close to 100%)
             ],
+
             hovertemplate: "<b>%{text}</b><br>Poverty: %{z}%<extra></extra>",
           }]}
           layout={{
@@ -160,12 +160,12 @@ export default function PovertyInsights() {
               z: data.filter((d) => d.Year === year).map((d) => parseFloat(d.Poverty_Rate) || 0),
               text: data.filter((d) => d.Year === year).map((d) => d.Country),
               colorscale: [
-                [0, "#F44336"],  // Poverty is Rising (Red)
-                [0.25, "#FFEB3B"],  // Off Track for SDG Target (Yellow)
-                [0.5, "#4CAF50"],  // On Track for SDG Target (Green)
-                [0.75, "#009688"],  // Poverty Below 3% (Teal)
-                [1, "#9E9E9E"],  // No Data (Gray)
+                [0.0, "#009688"],   // Teal — 0% (Poverty below 3%)
+                [0.3, "#4CAF50"],   // Green — improving
+                [0.6, "#FFEB3B"],   // Yellow — Off Track
+                [1.0, "#F44336"],   // Red — Poverty is Rising (close to 100%)
               ],
+
               hovertemplate: "<b>%{text}</b><br>Poverty: %{z}%<extra></extra>",
             }],
           }))}
@@ -227,14 +227,14 @@ function CountryDetails({ iso, data }: { iso: string; data: PovertyData[] }) {
 
   if (records.length === 0) {
     return (
-        <>
-          <Heading size="md" color="red.600" mb={2}>
-            {iso}
-          </Heading>
-          <Text fontSize="sm" color="gray.500">
-            No data found for this country.
-          </Text>
-        </>
+      <>
+        <Heading size="md" color="red.600" mb={2}>
+          {iso}
+        </Heading>
+        <Text fontSize="sm" color="gray.500">
+          No data found for this country.
+        </Text>
+      </>
     );
   }
 
@@ -253,88 +253,88 @@ function CountryDetails({ iso, data }: { iso: string; data: PovertyData[] }) {
   const showScroll = sorted.length > 10;
 
   return (
-      <>
-        <Heading size="md" color="red.600" mb={4}>
-          {countryName}
-        </Heading>
+    <>
+      <Heading size="md" color="red.600" mb={4}>
+        {countryName}
+      </Heading>
 
-        <Flex direction={{ base: "column", md: "row" }} width="100%" gap={4}>
-          {/* Line Chart Container */}
-          <Box width={{ base: "100%", md: "65%" }} display="flex" flexDirection="column">
-            {/* Chart Box with fixed height */}
-            <Box height="300px" width="100%">
-              <Plot
-                  data={[
-                    {
-                      x: years,
-                      y: povertyRates,
-                      type: 'scatter',
-                      mode: 'lines+markers',
-                      marker: { color: 'rgb(255, 111, 97)' },
-                      line: { color: 'rgb(255, 111, 97)', width: 3 },
-                      name: 'Poverty Rate (%)',
-                      hovertemplate: 'Year %{x}<br>Poverty Rate: %{y}%<extra></extra>'
-                    }
-                  ]}
-                  layout={{
-                    autosize: true,
-                    title: 'Poverty Rate Over Time',
-                    xaxis: {
-                      title: 'Year',
-                      tickmode: 'array',
-                      tickvals: visibleYears,
-                      ticktext: visibleYears,
-                      tickangle: 0,
-                      autorange: true
-                    },
-                    yaxis: {
-                      title: 'Poverty Rate (%)',
-                      autorange: true, // Auto-scale based on data
-                      zeroline: true
-                    },
-                    margin: { l: 50, r: 20, t: 40, b: 60 },
-                    hovermode: 'closest',
-                    showlegend: false,
-                    dragmode: 'pan' // Default interaction mode to pan
-                  }}
-                  style={{ width: '100%', height: '100%' }}
-                  config={{
-                    responsive: true,
-                    scrollZoom: true,       // Enable scroll to zoom
-                    displayModeBar: true,   // Show the mode bar
-                    modeBarButtonsToAdd: ['pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'], // Add useful buttons
-                    modeBarButtonsToRemove: ['select2d', 'lasso2d'], // Remove selection tools
-                    displaylogo: false      // Hide the plotly logo
-                  }}
-              />
-            </Box>
-
-            {/* Note placed outside the chart box with proper spacing */}
-            <Box mt={3} mb={3}>
-              <Text fontSize="xs" color="gray.500" textAlign="center">
-                Note: The chart connects available data points. Years without data are not displayed.
-              </Text>
-            </Box>
+      <Flex direction={{ base: "column", md: "row" }} width="100%" gap={4}>
+        {/* Line Chart Container */}
+        <Box width={{ base: "100%", md: "65%" }} display="flex" flexDirection="column">
+          {/* Chart Box with fixed height */}
+          <Box height="300px" width="100%">
+            <Plot
+              data={[
+                {
+                  x: years,
+                  y: povertyRates,
+                  type: 'scatter',
+                  mode: 'lines+markers',
+                  marker: { color: 'rgb(255, 111, 97)' },
+                  line: { color: 'rgb(255, 111, 97)', width: 3 },
+                  name: 'Poverty Rate (%)',
+                  hovertemplate: 'Year %{x}<br>Poverty Rate: %{y}%<extra></extra>'
+                }
+              ]}
+              layout={{
+                autosize: true,
+                title: 'Poverty Rate Over Time',
+                xaxis: {
+                  title: 'Year',
+                  tickmode: 'array',
+                  tickvals: visibleYears,
+                  ticktext: visibleYears,
+                  tickangle: 0,
+                  autorange: true
+                },
+                yaxis: {
+                  title: 'Poverty Rate (%)',
+                  autorange: true, // Auto-scale based on data
+                  zeroline: true
+                },
+                margin: { l: 50, r: 20, t: 40, b: 60 },
+                hovermode: 'closest',
+                showlegend: false,
+                dragmode: 'pan' // Default interaction mode to pan
+              }}
+              style={{ width: '100%', height: '100%' }}
+              config={{
+                responsive: true,
+                scrollZoom: true,       // Enable scroll to zoom
+                displayModeBar: true,   // Show the mode bar
+                modeBarButtonsToAdd: ['pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'], // Add useful buttons
+                modeBarButtonsToRemove: ['select2d', 'lasso2d'], // Remove selection tools
+                displaylogo: false      // Hide the plotly logo
+              }}
+            />
           </Box>
 
-          {/* Text representation */}
-          <Box
-              width={{ base: "100%", md: "35%" }}
-              maxH={showScroll ? "300px" : "auto"}
-              overflowY={showScroll ? "auto" : "visible"}
-              pr={showScroll ? 2 : 0}
-              pl={4}
-              borderLeft={{ base: "none", md: "1px solid" }}
-              borderColor={{ base: "transparent", md: "gray.200" }}
-          >
-            <Heading size="sm" mb={3} color="gray.700">Historical Data</Heading>
-            {sorted.map((r) => (
-                <Text key={r.Year} fontSize="sm" color="gray.700" mb={1} fontWeight="semibold">
-                  Year {r.Year}: {r.Poverty_Rate}%
-                </Text>
-            ))}
+          {/* Note placed outside the chart box with proper spacing */}
+          <Box mt={3} mb={3}>
+            <Text fontSize="xs" color="gray.500" textAlign="center">
+              Note: The chart connects available data points. Years without data are not displayed.
+            </Text>
           </Box>
-        </Flex>
-      </>
+        </Box>
+
+        {/* Text representation */}
+        <Box
+          width={{ base: "100%", md: "35%" }}
+          maxH={showScroll ? "300px" : "auto"}
+          overflowY={showScroll ? "auto" : "visible"}
+          pr={showScroll ? 2 : 0}
+          pl={4}
+          borderLeft={{ base: "none", md: "1px solid" }}
+          borderColor={{ base: "transparent", md: "gray.200" }}
+        >
+          <Heading size="sm" mb={3} color="gray.700">Historical Data</Heading>
+          {sorted.map((r) => (
+            <Text key={r.Year} fontSize="sm" color="gray.700" mb={1} fontWeight="semibold">
+              Year {r.Year}: {r.Poverty_Rate}%
+            </Text>
+          ))}
+        </Box>
+      </Flex>
+    </>
   );
 }

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { Box, Heading, Text, Center, Spinner, Flex, HStack, Select,
-    FormControl, FormLabel, Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
+import {
+    Box, Heading, Text, Center, Spinner, Flex, HStack, Select,
+    FormControl, FormLabel, Table, Thead, Tbody, Tr, Th, Td
+} from "@chakra-ui/react";
 import Papa from "papaparse";
 import React, { ReactNode } from "react";
 
@@ -56,7 +58,10 @@ export default function Foodpricesvshunger() {
                         market: item.market,
                         commodity: item.commodity,
                         unit: item.unit,
-                        yearmonth: item.yearmonth
+                        date: item.date,
+                        year: item.date ? new Date(item.date).getFullYear() : null,
+
+
                     }))
                     .filter(item => !isNaN(item.Price) && item.Price < 50);
 
@@ -70,35 +75,46 @@ export default function Foodpricesvshunger() {
     }, []);
 
     // Apply filters when data, priceFilter, or limitFilter changes
+    // Inside the existing component, replace the following useEffect block
+    // (this replaces how `countryData` is set when a country is selected)
+
     useEffect(() => {
         if (data.length === 0) return;
 
         let filtered = [...data];
 
-        // Apply price filter
         if (priceFilter === "low") {
             filtered = filtered.filter(item => item.Price >= 0.5 && item.Price <= 10);
         } else if (priceFilter === "high") {
             filtered = filtered.filter(item => item.Price > 10);
         }
 
-        // Apply market limit per country
+        // Sort filtered data by year DESC before applying country limit
+        filtered.sort((a, b) => (b.year || 0) - (a.year || 0));
+
         const countryGroups: Record<string, FoodPriceData[]> = {};
-        filtered.forEach(item => {
+        for (const item of filtered) {
             if (!countryGroups[item.Country]) {
                 countryGroups[item.Country] = [];
             }
             if (countryGroups[item.Country].length < limitFilter) {
                 countryGroups[item.Country].push(item);
             }
-        });
+        }
 
         filtered = Object.values(countryGroups).flat();
         setFilteredData(filtered);
 
-        // Update country data if a country is selected
         if (selectedCountry) {
-            setCountryData(filtered.filter(item => item.Country === selectedCountry));
+            const selected = filtered
+                .filter(item => item.Country === selectedCountry)
+                .sort((a, b) => {
+                    const yearA = a.year || 0;
+                    const yearB = b.year || 0;
+                    return yearB - yearA;
+                });
+
+            setCountryData(selected);
         }
     }, [data, priceFilter, limitFilter, selectedCountry]);
 
@@ -196,7 +212,12 @@ export default function Foodpricesvshunger() {
                             size: 8,
                             opacity: 0.8,
                             color: filteredData.map(d => d.Price),
-                            colorscale: "Turbo",
+                            colorscale: [
+                                [0, "#009688"],     // Teal for low prices
+                                [0.5, "#FFEB3B"],   // Yellow midrange
+                                [1, "#F44336"],     // Red for high prices
+                            ],
+
                             colorbar: {
                                 title: "Price (USD)",
                                 thickness: 15
@@ -241,7 +262,7 @@ export default function Foodpricesvshunger() {
                         <Table variant="simple" size="sm">
                             <Thead>
                                 <Tr>
-                                    <Th>Commodity</Th>
+                                    <Th>Commodity (Year)</Th>
                                     <Th>Market</Th>
                                     <Th>Region</Th>
                                     <Th>City</Th>
@@ -250,17 +271,21 @@ export default function Foodpricesvshunger() {
                                 </Tr>
                             </Thead>
                             <Tbody>
-                                {countryData.slice(0, 20).map((item, index) => (
-                                    <Tr key={index}>
-                                        <Td>{item.commodity}</Td>
-                                        <Td>{item.market}</Td>
-                                        <Td>{item.Region || "N/A"}</Td>
-                                        <Td>{item.City || "N/A"}</Td>
-                                        <Td isNumeric>${item.Price.toFixed(2)}</Td>
-                                        <Td>{item.unit}</Td>
-                                    </Tr>
-                                ))}
+                                {countryData.slice(0, 20).map((item, index) => {
+                                    const year = item.yearmonth?.slice(0, 4) || "N/A";
+                                    return (
+                                        <Tr key={index}>
+                                            <Td>{`${item.commodity} (${item.year || "N/A"})`}</Td>
+                                            <Td>{item.market}</Td>
+                                            <Td>{item.Region || "N/A"}</Td>
+                                            <Td>{item.City || "N/A"}</Td>
+                                            <Td isNumeric>${item.Price.toFixed(2)}</Td>
+                                            <Td>{item.unit}</Td>
+                                        </Tr>
+                                    );
+                                })}
                             </Tbody>
+
                         </Table>
                         {countryData.length > 20 && (
                             <Text mt={2} color="gray.500" fontSize="sm" textAlign="center">
