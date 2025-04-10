@@ -30,6 +30,9 @@ npm install next@15.2.2
 npm install react@^19.0.0
 npm install react-dom@^19.0.0
 npm install react-icons
+npm install react-plotly.js plotly.js
+npm install papaparse
+npm install --save-dev typescript @types/react @types/node @types/papaparse
 ```
 
 ---
