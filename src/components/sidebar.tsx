@@ -91,22 +91,10 @@ const Sidebar = () => {
         <Button
           {...buttonStyles}
           leftIcon={<Icon as={BiBulb} />}
-          justifyContent="space-between"
-          onClick={() => setShowInsights(!showInsights)}
-        >
-          Correlation Insights
-          <Icon as={showInsights ? MdTrendingUp : BiLineChart} />
+          onClick={() => router.push("/correlationinsights")}
+        >Correlation Insights
         </Button>
         <Divider borderColor="#CC9900" />
-
-        <Collapse in={showInsights} animateOpacity>
-          <VStack pl={6} align="stretch">
-            <Button {...buttonStyles}>Insight 1</Button>
-            <Divider borderColor="#CC9900" />
-            <Button {...buttonStyles}>Insight 2</Button>
-            <Divider borderColor="#CC9900" />
-          </VStack>
-        </Collapse>
       </VStack>
     </Box>
   );
