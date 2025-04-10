@@ -34,13 +34,17 @@ npm install react-icons
 
 ---
 
-## 📥 Preparing the Data
+## 📥 Preparing the Data 
 
-Before running the app, you need to generate the required CSV file for food prices. This must be done through the companion **Google Colab notebook**, which scrapes and compiles the data from public sources.
+Before running the app, you need to generate the required CSV file for **food prices**. This must be done through the companion **Google Colab notebook**, which scrapes and compiles the data from public sources.
 
-➡️ [Open the Colab Notebook](https://colab.research.google.com/drive/1CB5YGZHRsyesIsGErbFml34BrXnQOTs4?usp=sharing)
+1. Go to the [WFP Global Food Prices Dataset (HDX)](https://data.humdata.org/dataset/global-wfp-food-prices?fbclid=IwY2xjawIvrKdleHRuA2FlbQIxMAABHRe8zUV68t9n-DYtvpT0dG_y2vslCq9SzGWRZwQfEGXC9BRcyGhoWkTCPw_aem_e3T_qGZzglT-IL8kl6lgxQ), then download wfp countries global csv file. 
 
-This process will output a file named `combined_country_food_prices.csv`, which you'll need to download and place in your project directory.
+2. ➡️ [Open the Colab Notebook](https://colab.research.google.com/drive/1CB5YGZHRsyesIsGErbFml34BrXnQOTs4?usp=sharing), go to **"Scraping Global Food Prices Data from Country Links"**
+
+3. Paste the downloaded (WFP COUNTRIES GLOBAL) on the Files of Collab, then run the code.
+
+4. Web-scraping will commence. This process will output a file named `combined_country_food_prices.csv`, which you'll need to download and place in your project directory.
 
 > **Note:** If you're modifying the notebook, ensure that libraries such as `requests`, `pandas`, and `beautifulsoup4` are installed.
 
