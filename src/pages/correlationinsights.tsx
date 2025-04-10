@@ -8,6 +8,10 @@ const CorrelationInsights = () => {
       </Heading>
 
       <Box p={4} bg="white" borderRadius="md" boxShadow="sm" mb={6}>
+        <Text fontSize="lg" lineHeight="1.8" color="black" mb={4}>
+          These visualizations help policymakers, researchers, NGOs, and advocacy groups identify hunger and poverty trends globally and regionally. By understanding these patterns, they can prioritize humanitarian aid and policy changes to address the most pressing needs. The insights derived from the data enable targeted interventions to alleviate hunger, reduce poverty, and improve food security, ultimately shaping more effective and sustainable solutions to global hunger crises.
+        </Text>
+
         <Text fontSize="lg" lineHeight="1.8" color="black">
           The relationship between poverty and hunger is a deeply interconnected cycle that affects many parts of the world, particularly in low-income and conflict-prone regions. Countries such as Chad, Niger, and Somalia demonstrate a strong correlation between poverty levels and hunger severity. In these nations, fluctuations in poverty rates often mirror changes in hunger indicators. When poverty increases due to economic instability, conflict, or climate-related disruptions, hunger levels tend to rise alongside. Conversely, any progress in poverty reduction, however small, is frequently accompanied by slight improvements in food security and nutritional outcomes. For instance, in Chad, periods of drought and political instability have pushed both poverty and hunger indicators to alarming levels, with undernourishment and child wasting becoming widespread. Similarly, Niger, despite efforts to reduce poverty, continues to struggle with high child mortality and undernutrition, particularly in rural communities where food access remains limited. In Somalia, ongoing conflict and displacement have sustained both high poverty and high hunger rates, reinforcing the cycle of food insecurity and malnutrition.
         </Text>
